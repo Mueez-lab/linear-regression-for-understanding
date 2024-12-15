@@ -9,7 +9,6 @@ def z_score_Normalization(x_axis):
     x_norm = (x_axis-mu)/sigma #formula to calculate z_score or range in blow +ve x and -ve x
     return x_norm, mu, sigma
 
-
 #cost function is actually the difference between actual value and predicted value
 def compute_cost(x_axis, y_axis,w,b):
     m = len(y_axis)
@@ -41,10 +40,10 @@ def gradient_descent(x_axis, y_axis, w, b, alpha, iterations):
 x_axis = np.array([[1.0,2.0,3.0],[2.0,1.0,0.5],[0.5,1.5,2.0]])
 y_axis = np.array([[14],[8],[10]])
 w = np.array([[0.5],[0.3],[-0.2]]) #weight and weight represents the slope of the line
-b = 1 # it is bias or y-intercept formula of b is (mean-of-y - (w * mean-of-x)
+b = 1 # it is bias or y-intercept formula of b is (mean-of-y - (w * mean-of-x))
 alpha = 0.01 # alpha is the learning late too big can lead to wrong min value which results in bad cost and too small can slow down
 theta = w
-iterations= 1000 # in documentation of a=0.01 then we should choose 1k but after 403 cost stops decreasing significantly so is it better to choose 403 or 1K?
+iterations= 1000 # in documentation if a=0.01 then we should choose 1k but after 403 cost stops decreasing significantly so is it better to choose 403 or 1K?
 x_norm ,mu, sigma = z_score_Normalization(x_axis)
 print("Cost without gradient descent aka ",compute_cost(x_axis,y_axis,w,b))
 # Perform gradient descent
