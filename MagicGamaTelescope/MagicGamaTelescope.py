@@ -1,6 +1,8 @@
+# ----------------------------------------------------- Classification ----------------------------------------
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+
 cols=('fLength','fWidth','fSize','fConc','fConc1','fAsym','fM3Long','fM3Trans','fAlpha','fDist', 'class')
 df = pd.read_csv('C:/Users/mueez/OneDrive/Desktop/Machine/MagicGamaTelescope/magic04.data', names=cols)
 # g is gama and h is hadrons
