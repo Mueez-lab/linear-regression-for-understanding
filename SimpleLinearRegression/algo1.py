@@ -1,7 +1,7 @@
 # Here data set is from 1 - 10,000 so we are going to use closed system 
 # Formula y = mx + b
 
-import numpy as np 
+import numpy as np #numerical stuff 
 import pandas as pd 
 import matplotlib.pyplot as plt
 
