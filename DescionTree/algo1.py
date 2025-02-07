@@ -6,7 +6,7 @@ from collections import Counter
 def entropy(y):
     class_counts = Counter(y)
     total = len(y)
-    return -sum((count/total) * np.log2(count/total) for count in class_counts.values())
+    return -sum((count/total) * np.log2(count/total) for count in class_counts.values())  # in count the value are going to be stored from class_counts 1 item per 1 iterration with overwritting property 
 
 # Calculate Information Gain
 def information_gain(data, target, feature):
