@@ -2,94 +2,48 @@ import numpy as np
 import pandas as pd
 from collections import Counter
 
-# Function to calculate entropy
+# Calculate Entropy
 def entropy(y):
-    counts = np.bincount(y)
-    probabilities = counts / len(y)
-    return -np.sum([p * np.log2(p) for p in probabilities if p > 0])
+    class_counts = Counter(y)
+    total = len(y)
+    return -sum((count/total) * np.log2(count/total) for count in class_counts.values())
 
-# Function to split dataset
-def split_dataset(X, y, feature, threshold):
-    left_idx = X[:, feature] <= threshold
-    right_idx = X[:, feature] > threshold
-    return X[left_idx], y[left_idx], X[right_idx], y[right_idx]
+# Calculate Information Gain
+def information_gain(data, target, feature):
+    total_entropy = entropy(target)
+    values, counts = np.unique(data[feature], return_counts=True)
+    weighted_entropy = sum((counts[i] / sum(counts)) * entropy(target[data[feature] == v]) for i, v in enumerate(values))
+    return total_entropy - weighted_entropy
 
-# Function to find the best split
-def best_split(X, y):
-    best_gain = 0
-    best_feature = None
-    best_threshold = None
-    current_entropy = entropy(y)
+# ID3 Decision Tree Algorithm
+def id3(data, target, features):
+    if len(set(target)) == 1:
+        return target.iloc[0]  # Return class if all instances have the same label
+     
+    if len(features) == 0:
+        return target.mode()[0]  # Return majority class
     
-    for feature in range(X.shape[1]):
-        thresholds = np.unique(X[:, feature])
-        for threshold in thresholds:
-            X_left, y_left, X_right, y_right = split_dataset(X, y, feature, threshold)
-            if len(y_left) == 0 or len(y_right) == 0:
-                continue
-            
-            p_left = len(y_left) / len(y)
-            p_right = len(y_right) / len(y)
-            
-            gain = current_entropy - (p_left * entropy(y_left) + p_right * entropy(y_right))
-            
-            if gain > best_gain:
-                best_gain = gain
-                best_feature = feature
-                best_threshold = threshold
+    best_feature = max(features, key=lambda f: information_gain(data, target, f))
     
-    return best_feature, best_threshold
+    tree = {best_feature: {}}
+    for value in data[best_feature].unique():
+        subset = data[data[best_feature] == value]
+        tree[best_feature][value] = id3(subset, subset[target.name], [f for f in features if f != best_feature])
+    return tree
 
-# Class for Decision Tree
-class DecisionTree:
-    def __init__(self, max_depth=None):
-        self.max_depth = max_depth
-        self.tree = None
-    
-    def fit(self, X, y, depth=0):
-        """Builds the decision tree and stores it in self.tree"""
-        self.tree = self._build_tree(X, y, depth)
-    
-    def _build_tree(self, X, y, depth):
-        """Recursive function to build the tree"""
-        if len(set(y)) == 1 or (self.max_depth and depth >= self.max_depth):
-            return Counter(y).most_common(1)[0][0]
-        
-        feature, threshold = best_split(X, y)
-        if feature is None:
-            return Counter(y).most_common(1)[0][0]
-        
-        X_left, y_left, X_right, y_right = split_dataset(X, y, feature, threshold)
-        
-        node = {
-            'feature': feature,
-            'threshold': threshold,
-            'left': self._build_tree(X_left, y_left, depth + 1),
-            'right': self._build_tree(X_right, y_right, depth + 1)
-        }
-        return node
-    
-    def predict_sample(self, node, sample):
-        if not isinstance(node, dict):
-            return node
-        if sample[node['feature']] <= node['threshold']:
-            return self.predict_sample(node['left'], sample)
-        else:
-            return self.predict_sample(node['right'], sample)
-    
-    def predict(self, X):
-        """Predict labels for given dataset"""
-        return np.array([self.predict_sample(self.tree, sample) for sample in X])
+# Sample Dataset
+data = pd.DataFrame({
+    'Temp': ['Mild', 'Cool', 'Cool', 'Mild', 'Mild'],
+    'Humidity': ['High', 'Normal', 'Normal', 'Normal', 'High'],
+    'Wind': ['Weak', 'Weak', 'Strong', 'Weak', 'Strong'],
+    'Play Tennis': ['Yes', 'Yes', 'No', 'Yes', 'No']
+})
 
-# Sample dataset
-X = np.array([[2.7], [1.3], [3.5], [0.8], [2.2], [3.0], [1.0], [2.5], [3.8], [0.5]])
-y = np.array([1, 0, 1, 0, 1, 1, 0, 1, 1, 0])
+# Train Decision Tree
+features = ['Temp', 'Humidity', 'Wind']
+target = data['Play Tennis']
+decision_tree = id3(data, target, features)
 
-# Create and train decision tree
-dt = DecisionTree(max_depth=3)
-dt.fit(X, y)
-
-# Test prediction
-X_test = np.array([[2.0], [3.0], [1.5], [3.7]])
-predictions = dt.predict(X_test)
-print("Predictions:", predictions)
+# Print Tree
+import pprint
+pprint.pprint(decision_tree)
