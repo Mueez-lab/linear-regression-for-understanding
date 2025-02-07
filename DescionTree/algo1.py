@@ -11,7 +11,7 @@ def entropy(y):
 # Calculate Information Gain
 def information_gain(data, target, feature):
     total_entropy = entropy(target)
-    values, counts = np.unique(data[feature], return_counts=True)
+    values, counts = np.unique(data[feature], return_counts=True) # The return_counts=True parameter returns the count of each unique value in the array. and data[feature] is returning values of each feature one time like [strong, mild] [2,3]
     weighted_entropy = sum((counts[i] / sum(counts)) * entropy(target[data[feature] == v]) for i, v in enumerate(values))
     return total_entropy - weighted_entropy
 
