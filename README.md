@@ -1,5 +1,3 @@
----
-
 # 📊 Regression and Classification Models in Python
 
 This repository contains foundational implementations of various machine learning algorithms using Python and libraries like `scikit-learn`, `numpy`, and `matplotlib`. Great for beginners looking to understand the basics of regression and classification techniques.
